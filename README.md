@@ -26,4 +26,4 @@ message eliding which don't work well with discard indications.
 - [ ] Free message.
 - [ ] Provide both raw binding and higher level binding.
 - [x] Support Mac.
-- [ ] Support Linux.
+- [x] Support Linux.

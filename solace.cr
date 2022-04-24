@@ -1,6 +1,8 @@
 @[Link(ldflags: "-L#{__DIR__}/solclient")]
 @[Link(ldflags: "-lsolclient -lssl -lcrypto")]
-@[Link(framework: "kerberos")]
+{% if flag?(:darwin) %}
+  @[Link(framework: "kerberos")]
+{% end %}
 lib LibSolace
 
   # ===========================================================
