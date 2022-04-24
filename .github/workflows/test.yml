@@ -1,0 +1,66 @@
+on: [push, pull_request]
+
+jobs:
+  smoke-test:
+    runs-on: macOS-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+
+      - name: Download Solace SDK
+        run: |
+          mkdir solclient
+          wget -c https://products.solace.com/download/C_API_OSX -O - | tar -xz
+          cd solclient-*/lib
+          mv libsolclient.a.* libsolclient.a libcrypto.a libssl.a ../../solclient
+
+      - name: Run smoke test
+        run: |
+          cd test
+          crystal run smoke_test.cr
+
+  connect-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Start Solace
+        run: |
+          docker run -d -p 8080:8080 -p 55555:55555 --shm-size=1g \
+            --env username_admin_globalaccesslevel=admin \
+            --env username_admin_password=pass \
+            --name=solace \
+            solace/solace-pubsub-standard
+
+          # Wait until Solace starts.
+          sleep 20
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+
+      - name: Download Solace SDK
+        run: |
+          mkdir solclient
+          wget -c https://products.solace.com/download/C_API_LINUX64 -O - | tar -xz
+          cd solclient-*/lib
+          mv libsolclient.a.* libsolclient.a libcrypto.a libssl.a ../../solclient
+
+      - name: Diagnostics
+        run: |
+          echo "Docker processes"
+          docker ps
+          echo "Open ports"
+          sudo lsof -i -n -P | grep TCP
+
+      - name: Run connect test
+        run: |
+          cd test
+          crystal run connect_test.cr
+        env:
+          SOLACE_HOST: localhost
+          SOLACE_USER: admin
+          SOLACE_PASSWORD: pass
