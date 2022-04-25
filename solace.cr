@@ -68,6 +68,8 @@ lib LibSolace
 
   fun initialize = solClient_initialize(log_level : LogLevel, props : Props) : ReturnCode
 
+  # NOTE: `solClient_cleanup` is intentionally omitted.
+
   # ===========================================================
   # Context creation
   # ===========================================================
@@ -88,6 +90,8 @@ lib LibSolace
     funcs : FDRegistrationFuncs*,
     funcs_size : LibC::SizeT
   ) : ReturnCode
+
+  fun context_destroy = solClient_context_destroy(context : Context*) : ReturnCode
 
   # ===========================================================
   # Session creation
@@ -229,6 +233,18 @@ lib LibSolace
   ) : ReturnCode
 
   fun session_connect = solClient_session_connect(session : Session) : ReturnCode
+
+  # If there are buffered messages waiting to be transmitted for the session,
+  # then the caller is blocked until all buffered data has been written to the send socket.
+  # This is done regardless of whether the session has been configured
+  # for a blocking or non-blocking send operation.
+  fun session_disconnect = solClient_session_disconnect(session : Session) : ReturnCode
+
+  # Destroys session. If the session being destroyed is still in a connected state,
+  # any buffered messages which have not been sent yet are discarded.
+  # If the application wants to ensure that any buffered messages are
+  # first sent, `session_disconnect` must be called before.
+  fun session_destroy = solClient_session_destroy(session : Session*) : ReturnCode
 
   # ===========================================================
   # Subscriptions

@@ -82,3 +82,34 @@ puts "Connecting..."
 res = LibSolace.session_connect(session)
 
 raise "Error: #{res}" if res != LibSolace::ReturnCode::Ok
+
+puts "Subscribing to topic..."
+
+subscription = "test/topic"
+
+res = LibSolace.session_subscribe(
+  session: session,
+  flags: LibSolace::SubscribeFlags::RequestConfirm,
+  subscription: subscription.to_unsafe
+)
+
+# Expected return code is `InProgress` because confirmation will be received as session event.
+raise "Error: #{res}" if res != LibSolace::ReturnCode::InProgress
+
+puts "Disconnecting..."
+
+res = LibSolace.session_disconnect(session)
+
+raise "Error: #{res}" if res != LibSolace::ReturnCode::Ok
+
+puts "Destroying session..."
+
+res = LibSolace.session_destroy(pointerof(session))
+
+raise "Error: #{res}" if res != LibSolace::ReturnCode::Ok
+
+puts "Destroying context..."
+
+res = LibSolace.context_destroy(pointerof(context))
+
+raise "Error: #{res}" if res != LibSolace::ReturnCode::Ok

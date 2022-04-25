@@ -21,7 +21,7 @@ message eliding which don't work well with discard indications.
 - [x] Initialize API, create context and session.
 - [x] Subscribe to topics.
 - [ ] Unsubscribe from topics.
-- [ ] Destroy context and session.
+- [x] Destroy context and session.
 - [ ] Read message properties.
 - [ ] Free message.
 - [ ] Provide both raw binding and higher level binding.

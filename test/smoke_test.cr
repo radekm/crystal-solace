@@ -27,3 +27,9 @@ res = LibSolace.context_create(
 )
 
 raise "Error: #{res}" if res != LibSolace::ReturnCode::Ok
+
+puts "Destroying context..."
+
+res = LibSolace.context_destroy(pointerof(context))
+
+raise "Error: #{res}" if res != LibSolace::ReturnCode::Ok
